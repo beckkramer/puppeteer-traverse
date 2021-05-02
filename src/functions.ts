@@ -1,31 +1,28 @@
 
 'use strict';
 
-import parse from 'csv-parse';
 import fs from 'fs';
 import puppeteer,{ Browser, LaunchOptions, Page } from 'puppeteer-core'
 
-type FeatureT = {
-  [columnName: string]: string,
-}
+import {
+  ConfigT,
+  FeatureT,
+  PageLoadOverridesT,
+  RouteFunctionT,
+} from '../types'
 
-// Checks CSV file and prints out data
-export const getAllFeatures = async (filePath: string): Promise<FeatureT[]> => {
+export const getConfig = async (filePath: string): Promise<ConfigT> => {
 
-  // if no file, throws unhandled
-  const featureCsvContent = await fs.readFileSync(filePath, 'utf-8')
+  let configData
 
-  const parsedCsv = await parse(featureCsvContent, {
-    columns: true,
-  });
-
-  const features = []
-
-  for await (const feature of parsedCsv) {
-    features.push(feature);
+  try {
+    configData = fs.readFileSync(filePath, 'utf8')
+  } catch (error) {
+    console.log('Issue loading config.');
+    process.exit();
   }
 
-  return features
+  return JSON.parse(configData)[0]
 };
 
 export const setUpPuppeteerBrowser = async (browserOptions = {}): Promise<Browser> => {
@@ -47,94 +44,131 @@ export const setUpPuppeteerBrowser = async (browserOptions = {}): Promise<Browse
 };
 
 export const getDestinationPage = async (options: {
-  feature: FeatureT,
-  loadOptions?: puppeteer.WaitForOptions & { referrer: string },
+  loadOptions?: PageLoadOverridesT,
   page: Page,
+  path: string,
   rootUrl: string,
 }): Promise<Page> => {
 
-  const { feature, loadOptions, page, rootUrl } = options;
-  const featureUrl = `${rootUrl}/${feature.url}/`;
+  const { path, loadOptions, page, rootUrl } = options;
+
+  let fullUrl = `${rootUrl}/${path}/`;
+
+  // Skips the // after http:// or https://, and checks the path for 
+  // any // in the event a path had an unexpected leading or trailing /
+  fullUrl = fullUrl.replace(/(?<!:)(\/{2})/g, '/');
+
+  console.log(`Navigating to ${fullUrl}...`)
 
   await page
-    .goto(featureUrl, {
+    .goto(fullUrl, {
       waitUntil: 'networkidle2',
       ...loadOptions,
     })
     .catch(() => {
-      return Promise.reject(`Unable to go to ${featureUrl}.`);
+      return Promise.reject(`Unable to go to ${fullUrl}.`);
     });
 
-  if (page.url().toLowerCase() !== featureUrl.toLowerCase()) {
-    return Promise.reject(`Unable to go to ${featureUrl}. Current URL is ${page.url()}.`)
+  if (page.url().toLowerCase() !== fullUrl.toLowerCase()) {
+    return Promise.reject(`Unable to go to ${fullUrl}. Current URL is ${page.url()}.`)
   }
 
-  return page
+  return Promise.resolve(page);
+}
+
+const runOnFeature = async (options: {
+  feature: FeatureT,
+  browser: Browser,
+  pageLoadOptions: PageLoadOverridesT,
+  perRouteFunction: RouteFunctionT,
+  rootUrl: string,
+}) => {
+
+  const {
+    feature,
+    browser,
+    pageLoadOptions,
+    perRouteFunction,
+    rootUrl,
+  } = options;
+
+  console.group(`Attempting to run on ${feature.name} paths...\n`)
+
+    for await (const path of feature.paths) {
+
+      const page = await browser.newPage();
+      let destinationPage: Page;
+
+      try {
+        destinationPage = await getDestinationPage({
+          loadOptions: pageLoadOptions,
+          page,
+          path,
+          rootUrl,
+        });
+
+        console.log('Running passed in function(s)...');
+
+        try {
+          const { id, name } = feature
+          await perRouteFunction({
+            currentRoute: path,
+            feature: {
+              id,
+              name,
+            },
+            puppeteerPage: destinationPage,
+          });
+          console.log('Finished!\n')
+        } catch (error) {
+          console.log(error);
+        }
+
+        await destinationPage.close();
+
+      } catch (error) {
+        console.log(`Page for ${path} could not be loaded, skipping.`)
+        page.close();
+        return Promise.reject(`Page for ${path} could not be loaded, skipping.`);
+      }
+    }
+    console.groupEnd();
 }
 
 export const run = async (options: {
-  browserOptions?: LaunchOptions,
-  featureConfigCsv: string,
-  pageLoadOptions?: puppeteer.WaitForOptions & { referrer: string },
-  perRouteFunction: (page: Page) => Promise<void>,
-  rootUrl: string,
+  browserOptions?: Partial<LaunchOptions>,
+  configFile: string,
+  pageLoadOptions?: PageLoadOverridesT,
+  perRouteFunction: RouteFunctionT,
 }): Promise<void> => {
 
   const {
     browserOptions = {},
-    featureConfigCsv,
+    configFile,
     pageLoadOptions,
     perRouteFunction,
-    rootUrl,
   } = options
 
-  if (!rootUrl) {
-    return Promise.reject('Cannot run, rootUrl is not defined.');
-  }
-  if (!featureConfigCsv) {
-    return Promise.reject('Cannot run, featureConfigCsv is not defined.');
+  if (!configFile) {
+    return Promise.reject('Cannot run, configFile is not defined.');
   }
   if (!perRouteFunction) {
     return Promise.reject('Cannot run, perRouteFunction is not defined.');
   }
 
-  const allFeatures = await getAllFeatures(featureConfigCsv);
-  const browser = await setUpPuppeteerBrowser(browserOptions);
+  const { app, features } = await getConfig(configFile);
 
-  for await (const feature of allFeatures) {
+   const browser = await setUpPuppeteerBrowser(browserOptions);
 
-    const page = await browser.newPage()
+  for await (const feature of features) {
 
-    console.group(`Attempting to visit to ${feature.feature}...`)
-
-    const destinationPage: Page = await getDestinationPage({
-      page: page,
-      feature: feature,
-      loadOptions: pageLoadOptions,
-      rootUrl: rootUrl,
+    await runOnFeature({
+      browser,
+      feature,
+      pageLoadOptions,
+      perRouteFunction,
+      rootUrl: app.rootUrl,
     });
-
-    if (!destinationPage) {
-      console.log(`Page for ${feature.name} could not be loaded, skipping.`)
-      return
-    }
-
-    console.log('Running passed in function(s)...');
-
-    try {
-      const passedInFunctions = async () => {
-        await perRouteFunction(destinationPage);
-      }
-
-      await passedInFunctions();
-
-      console.log('Finished!\n')
-      console.groupEnd();
-    } catch (error) {
-      console.log(error);
-    }
-
-    await destinationPage.close();
   }
 
   await browser.close();

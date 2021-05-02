@@ -1,0 +1,25 @@
+[{
+  "app": {
+    "rootUrl": "https://www.reddit.com"
+  },
+  "features": [
+    {
+      "name": "Basketball",
+      "id": "b_ball",
+      "paths": [
+        "/r/nba",
+        "/r/basketball",
+        "/r/basketballtips"
+      ]
+    },
+    {
+      "name": "Soccer",
+      "id": "soccer",
+      "paths": [
+        "/r/mls",
+        "/r/soccer",
+        "/r/nasl"
+      ]
+    }
+  ]
+}]

@@ -4,7 +4,6 @@ import { Browser, Page } from 'puppeteer-core';
 
 export const stubPage = {
   close() {
-    console.log('!!!!!!!!!!!!!!!!!!!');
     return Promise.resolve();
   },
   goto(url: string) {
@@ -20,7 +19,6 @@ export const stubBrowser = {
     return Promise.resolve(stubPage);
   },
   close() {
-    console.log('????????????????????????');
     return Promise.resolve();
   }
 } as unknown as Browser;

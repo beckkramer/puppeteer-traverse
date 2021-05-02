@@ -2,7 +2,7 @@
 import puppeteer,{ Browser, LaunchOptions, Page } from 'puppeteer-core'
 
 import { 
-  getAllFeatures,
+  getConfig,
   getDestinationPage,
   run,
   setUpPuppeteerBrowser,
@@ -14,16 +14,16 @@ import {
   stubPuppeteer,
 } from './__test__/mockPuppeteer';
 
-const testCsvPath = __dirname + '/__test__/test.csv';
+const testConfig = __dirname + '/__test__/testConfig.json';
 
 const testFunction = jest.fn(async () => {
   await setTimeout(jest.fn(), 200);
 });
 
 jest.mock('puppeteer-core', () => ({
-	launch() {
-		return stubBrowser;
-	}
+  launch() {
+    return stubBrowser;
+  }
 }));
 
 beforeEach(() => {
@@ -33,28 +33,20 @@ beforeEach(() => {
 describe('@run', () => {
   it('should verify config is complete before running Puppeteer scripts', async () => {
 
-    expect.assertions(3);
+    expect.assertions(2);
 
     await expect(run({
-      featureConfigCsv: null,
+      configFile: null,
       perRouteFunction: testFunction,
-      rootUrl: 'https://searching-stuff.com',
-    })).rejects.toEqual('Cannot run, featureConfigCsv is not defined.');
+    })).rejects.toEqual('Cannot run, configFile is not defined.');
 
     await expect(run({
-      featureConfigCsv: testCsvPath,
+      configFile: testConfig,
       perRouteFunction: null,
-      rootUrl: 'https://searching-stuff.com',
     })).rejects.toEqual('Cannot run, perRouteFunction is not defined.');
-
-    await expect(run({
-      featureConfigCsv: testCsvPath,
-      perRouteFunction: testFunction,
-      rootUrl: null,
-    })).rejects.toEqual('Cannot run, rootUrl is not defined.');
   });
 
-  it('should call the passed in function once per row of feature data', async () => {
+  it('should call the passed in function once per path', async () => {
 
     jest.spyOn(stubPage, 'url')
       .mockReturnValue('https://searching-stuff.com/results/');
@@ -62,9 +54,8 @@ describe('@run', () => {
     expect.assertions(1);
 
     await run({
-      featureConfigCsv: testCsvPath,
+      configFile: testConfig,
       perRouteFunction: testFunction,
-      rootUrl: 'https://searching-stuff.com',
     })
 
     expect(testFunction).toHaveBeenCalledTimes(2);
@@ -81,9 +72,8 @@ describe('@run', () => {
     expect.assertions(2);
 
     await run({
-      featureConfigCsv: testCsvPath,
+      configFile: testConfig,
       perRouteFunction: testFunction,
-      rootUrl: 'https://searching-stuff.com',
     });
 
     expect(pageCloseSpy).toHaveBeenCalledTimes(2);
@@ -96,21 +86,9 @@ describe('@run', () => {
         .mockRejectedValue('');
   
       await expect(run({
-        featureConfigCsv: testCsvPath,
+        configFile: testConfig,
         perRouteFunction: testFunction,
-        rootUrl: 'https://searching-stuff.com',
       })).rejects.toEqual('There was an issue launching the Puppeteer browser.');
-    });
-
-    it('should pass along a message about a feature URL', async () => {
-      jest.spyOn(stubPage, 'goto')
-        .mockRejectedValue('');
-  
-      await expect(run({
-        featureConfigCsv: testCsvPath,
-        perRouteFunction: testFunction,
-        rootUrl: 'https://searching-stuff.com',
-      })).rejects.toEqual('Unable to go to https://searching-stuff.com/results/.');
     });
 
     it('should log a message if the loaded URL does not match the feature URL', async() => {
@@ -120,10 +98,9 @@ describe('@run', () => {
       expect.assertions(1);
 
       await expect(run({
-        featureConfigCsv: testCsvPath,
+        configFile: testConfig,
         perRouteFunction: testFunction,
-        rootUrl: 'https://searching-stuff.com',
-      })).rejects.toEqual('Unable to go to https://searching-stuff.com/results/. Current URL is https://searching-stuff.com/redirected/.');
+      })).rejects.toEqual('Page for results could not be loaded, skipping.');
     });
   });
 });
