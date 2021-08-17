@@ -1,19 +1,17 @@
 import traverse, { RouteFunctionT } from '../.';
+import { config } from './exampleConfig';
 
 // If you're on Windows, you might need to point Puppeteer at Chrome:
 const PUPPETEER_BROWSER = 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe';
 
-// This path needs to be relative to the folder you run traverse from:
-const FEATURE_CONFIG_FILE = 'examples/exampleConfig.json';
-
-const TEST_PUPPETEER_FUNCTION: RouteFunctionT = async (options) => {
+const takeScreenshotPerRoute: RouteFunctionT = async (options) => {
 
   const { currentRoute, feature, puppeteerPage } = options
 
   try {
-    // Takes a screenshot based on current route name and saves it to root.
+    // Takes a screenshot based on current route name and saves it to /examples folder.
     await puppeteerPage.screenshot({
-      path: `./screenshot-${feature.name}-${currentRoute.replace(/\//g, '_')}.png`,
+      path: `./examples/screenshot-${feature.name}-${currentRoute.replace(/\//g, '_')}.png`,
     });
   } catch (error) {
     console.log(error);
@@ -21,7 +19,7 @@ const TEST_PUPPETEER_FUNCTION: RouteFunctionT = async (options) => {
   }
 };
 
-const BROWSER_OVERRIDES = {
+const browserOptions = {
   executablePath: PUPPETEER_BROWSER,
   ignoreDefaultArgs: ['--disable-extensions'],
 };
@@ -29,9 +27,9 @@ const BROWSER_OVERRIDES = {
 (async () => {
   try {
     await traverse.run({
-      browserOptions: BROWSER_OVERRIDES,
-      configFile: FEATURE_CONFIG_FILE,
-      perRouteFunction: TEST_PUPPETEER_FUNCTION,
+      browserOptions: browserOptions,
+      config: config,
+      perRouteFunction: takeScreenshotPerRoute,
     });
   } catch (error) {
     console.log(error);

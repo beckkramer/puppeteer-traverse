@@ -2,6 +2,7 @@ import puppeteer, { Page } from 'puppeteer-core';
 
 export type ConfigT = {
   app: {
+    errorContent?: string[]
     rootUrl: string
   },
   features: Array<FeatureT>
