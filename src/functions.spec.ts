@@ -1,20 +1,16 @@
 
-import puppeteer,{ Browser, LaunchOptions, Page } from 'puppeteer-core'
+import puppeteer from 'puppeteer-core'
+import testConfig from './__test__/testConfig';
 
-import { 
-  getConfig,
-  getDestinationPage,
+
+import {
   run,
-  setUpPuppeteerBrowser,
 } from './functions';
 
 import {
   stubBrowser,
   stubPage,
-  stubPuppeteer,
 } from './__test__/mockPuppeteer';
-
-const testConfig = __dirname + '/__test__/testConfig.json';
 
 const testFunction = jest.fn(async () => {
   await setTimeout(jest.fn(), 200);
@@ -31,17 +27,26 @@ beforeEach(() => {
 });
 
 describe('@run', () => {
-  it('should verify config is complete before running Puppeteer scripts', async () => {
+
+  beforeEach(() => {
+    // Since run has console logging throughout, we disable it here
+    // to reduce noise. Comment out below if you wish to view
+    // console log output.
+    jest.spyOn(console, 'log').mockImplementation(jest.fn());
+    jest.spyOn(console, 'group').mockImplementation(jest.fn());
+  })
+
+  it('should verify config before running Puppeteer scripts', async () => {
 
     expect.assertions(2);
 
     await expect(run({
-      configFile: null,
+      config: null,
       perRouteFunction: testFunction,
-    })).rejects.toEqual('Cannot run, configFile is not defined.');
+    })).rejects.toEqual('Cannot run, config is not defined or is incomplete.');
 
     await expect(run({
-      configFile: testConfig,
+      config: testConfig,
       perRouteFunction: null,
     })).rejects.toEqual('Cannot run, perRouteFunction is not defined.');
   });
@@ -54,9 +59,9 @@ describe('@run', () => {
     expect.assertions(1);
 
     await run({
-      configFile: testConfig,
+      config: testConfig,
       perRouteFunction: testFunction,
-    })
+    });
 
     expect(testFunction).toHaveBeenCalledTimes(2);
   });
@@ -72,7 +77,7 @@ describe('@run', () => {
     expect.assertions(2);
 
     await run({
-      configFile: testConfig,
+      config: testConfig,
       perRouteFunction: testFunction,
     });
 
@@ -86,21 +91,42 @@ describe('@run', () => {
         .mockRejectedValue('');
   
       await expect(run({
-        configFile: testConfig,
+        config: testConfig,
         perRouteFunction: testFunction,
       })).rejects.toEqual('There was an issue launching the Puppeteer browser.');
     });
 
-    it('should log a message if the loaded URL does not match the feature URL', async() => {
+    it('should log a message if a URL redirects', async() => {
       jest.spyOn(stubPage, 'url')
-        .mockReturnValue('https://searching-stuff.com/redirected/');
+        .mockReturnValue('https://searching-stuff.com/nope/');
 
-      expect.assertions(1);
-
-      await expect(run({
-        configFile: testConfig,
+      await run({
+        config: testConfig,
         perRouteFunction: testFunction,
-      })).rejects.toEqual('Page for results could not be loaded, skipping.');
+      });
+
+      expect(console.log).toHaveBeenCalledWith(
+        expect.stringContaining('All features finished')
+      );
+      expect(console.log).toHaveBeenCalledWith(
+        expect.stringContaining('Unable to go to https://searching-stuff.com/results/; redirected to https://searching-stuff.com/nope/.')
+      );
+    });
+
+    it('should not run if error content found', async() => {
+      jest.spyOn(stubPage, 'url')
+        .mockReturnValue('https://searching-stuff.com/results/');
+      jest.spyOn(stubPage, 'content')
+        .mockResolvedValue('<html>not found</html>');
+
+      await run({
+        config: testConfig,
+        perRouteFunction: testFunction,
+      });
+
+      expect(console.log).toHaveBeenCalledWith(
+        expect.stringContaining('Error content found on https://searching-stuff.com/results/; route skipped.')
+      );
     });
   });
 });

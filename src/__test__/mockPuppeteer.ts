@@ -6,11 +6,14 @@ export const stubPage = {
   close() {
     return Promise.resolve();
   },
+  content() {
+    return Promise.resolve('some content');
+  },
   goto(url: string) {
     return Promise.resolve();
   },
   url() {
-    return '';
+    return 'www.somewhere.com';
   },
 } as unknown as Page;
 
