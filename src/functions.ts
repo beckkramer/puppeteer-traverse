@@ -4,6 +4,8 @@
 import fs from 'fs';
 import puppeteer,{ Browser, LaunchOptions, Page } from 'puppeteer-core';
 
+import { minimal_args } from './constants';
+
 // @ts-ignore: FIXME: Sort out cli progress typing
 import { default as cliProgress } from 'cli-progress';
 
@@ -19,6 +21,7 @@ export const setUpPuppeteerBrowser = async (browserOptions = {}): Promise<Browse
 
   try {
     browser = await puppeteer.launch({
+      args: minimal_args,
       ...browserOptions,
     })
   } catch(error) {
@@ -58,8 +61,6 @@ export const getDestinationPage = async (options: {
     });
 
   const currentUrl = page.url();
-
-  console.log(currentUrl, fullUrl)
 
   if (currentUrl?.toLowerCase() !== fullUrl.toLowerCase()) {
     return Promise.reject(`Unable to go to ${fullUrl}; redirected to ${currentUrl}.`);
@@ -138,6 +139,7 @@ const runOnFeature = async (options: {
   } = options;
 
   const featureProgressBar = progressBar.create(feature.paths.length, 0, {task: feature.name});
+  const errors = []
 
   for await (const path of feature.paths) {
 
@@ -164,16 +166,21 @@ const runOnFeature = async (options: {
           puppeteerPage: destinationPage,
         });
       } catch (error) {
-        return Promise.reject(`Error running passed in function on ${path}.`);
+        Promise.reject(`Error running passed in function on ${path}.`);
       }
 
       await destinationPage.close();
 
     } catch (error) {
       page.close();
-      return Promise.reject(error);
+      errors.push(error)
+    } finally {
+      featureProgressBar.increment(1);
     }
-    featureProgressBar.increment(1);
+  }
+
+  if (errors) {
+    return Promise.reject(errors);
   }
   return Promise.resolve();
 }
@@ -198,6 +205,8 @@ export const run = async (options: {
   if (!perRouteFunction) {
     return Promise.reject('Cannot run, perRouteFunction is not defined.');
   }
+
+  const start = Date.now();
 
   const { app, features } = config;
 
@@ -224,20 +233,31 @@ export const run = async (options: {
     await browser.close();
     progressBar.stop();
 
-    console.log('\n\nAll features finished.');
+    const duration = (Number(Date.now()) - Number(start))/1000;
 
-    const errors = data.filter(entry => entry.status === 'rejected');
+    console.log(`\n\nAll features finished. Run took ${duration} seconds.\n`);
+
+    const errors = data.reduce(function (errorArray, entry) {
+      if (entry.status === 'rejected') {
+        if (typeof entry.reason === 'object') {
+          entry.reason.forEach((reason: string) => {
+            errorArray.push(reason);
+          })
+        } else {
+          errorArray.push(entry.reason);
+        }
+      }
+      return errorArray;
+    }, []);
 
     if (errors.length > 0) {
       console.group('Some issues occured:\n');
       errors.forEach(entry => {
-        // @ts-ignore
-        console.log(`- ${entry.reason}`);
+        console.log(`- ${entry}`);
       })
       console.log('\n');
       console.groupEnd();
     }
-
     return Promise.resolve();
   });
 }
