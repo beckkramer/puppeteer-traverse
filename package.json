@@ -13,7 +13,7 @@
   },
   "scripts": {
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "temp": "ts-node examples/screenshots.ts",
+    "example": "ts-node examples/screenshots.ts",
     "tsc": "tsc",
     "test": "jest --coverage"
   },
