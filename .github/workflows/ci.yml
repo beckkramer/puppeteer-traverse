@@ -1,0 +1,10 @@
+jobs:
+  setup:
+    steps:
+      - name: Install dependencies
+      - run: yarn --frozen-lockfile
+  test:
+    needs: setup
+    steps:
+      - name: Test
+      - run: yarn test
