@@ -1,29 +1,41 @@
 
-import puppeteer,{ Browser, LaunchOptions, Page } from 'puppeteer-core'
+import puppeteer from 'puppeteer';
+import testConfig from './__test__/testConfig';
 
-import { 
-  getAllFeatures,
-  getDestinationPage,
+
+import {
   run,
-  setUpPuppeteerBrowser,
 } from './functions';
 
 import {
   stubBrowser,
   stubPage,
-  stubPuppeteer,
 } from './__test__/mockPuppeteer';
-
-const testCsvPath = __dirname + '/__test__/test.csv';
 
 const testFunction = jest.fn(async () => {
   await setTimeout(jest.fn(), 200);
 });
 
-jest.mock('puppeteer-core', () => ({
-	launch() {
-		return stubBrowser;
-	}
+jest.mock('cli-progress', () => ({
+  MultiBar() {
+    return {
+      create() {
+        return {
+          increment: jest.fn(),
+        }
+      },
+      stop: jest.fn(),
+    };
+  },
+  Presets: {
+    shades_grey: '',
+  },
+}));
+
+jest.mock('puppeteer', () => ({
+  launch() {
+    return stubBrowser;
+  }
 }));
 
 beforeEach(() => {
@@ -31,30 +43,31 @@ beforeEach(() => {
 });
 
 describe('@run', () => {
-  it('should verify config is complete before running Puppeteer scripts', async () => {
 
-    expect.assertions(3);
-
-    await expect(run({
-      featureConfigCsv: null,
-      perRouteFunction: testFunction,
-      rootUrl: 'https://searching-stuff.com',
-    })).rejects.toEqual('Cannot run, featureConfigCsv is not defined.');
-
-    await expect(run({
-      featureConfigCsv: testCsvPath,
-      perRouteFunction: null,
-      rootUrl: 'https://searching-stuff.com',
-    })).rejects.toEqual('Cannot run, perRouteFunction is not defined.');
-
-    await expect(run({
-      featureConfigCsv: testCsvPath,
-      perRouteFunction: testFunction,
-      rootUrl: null,
-    })).rejects.toEqual('Cannot run, rootUrl is not defined.');
+  beforeEach(() => {
+    // Since run has console logging throughout, we disable it here
+    // to reduce noise. Comment out below if you wish to view
+    // console log output.
+    jest.spyOn(console, 'log').mockImplementation(jest.fn());
+    jest.spyOn(console, 'group').mockImplementation(jest.fn());
   });
 
-  it('should call the passed in function once per row of feature data', async () => {
+  it('should verify config before running Puppeteer scripts', async () => {
+
+    expect.assertions(2);
+
+    await expect(run({
+      config: null,
+      perRouteFunction: testFunction,
+    })).rejects.toEqual('Cannot run, config is not defined or is incomplete.');
+
+    await expect(run({
+      config: testConfig,
+      perRouteFunction: null,
+    })).rejects.toEqual('Cannot run, perRouteFunction is not defined.');
+  });
+
+  it('should call the passed in function once per path', async () => {
 
     jest.spyOn(stubPage, 'url')
       .mockReturnValue('https://searching-stuff.com/results/');
@@ -62,10 +75,9 @@ describe('@run', () => {
     expect.assertions(1);
 
     await run({
-      featureConfigCsv: testCsvPath,
+      config: testConfig,
       perRouteFunction: testFunction,
-      rootUrl: 'https://searching-stuff.com',
-    })
+    });
 
     expect(testFunction).toHaveBeenCalledTimes(2);
   });
@@ -81,9 +93,8 @@ describe('@run', () => {
     expect.assertions(2);
 
     await run({
-      featureConfigCsv: testCsvPath,
+      config: testConfig,
       perRouteFunction: testFunction,
-      rootUrl: 'https://searching-stuff.com',
     });
 
     expect(pageCloseSpy).toHaveBeenCalledTimes(2);
@@ -96,34 +107,42 @@ describe('@run', () => {
         .mockRejectedValue('');
   
       await expect(run({
-        featureConfigCsv: testCsvPath,
+        config: testConfig,
         perRouteFunction: testFunction,
-        rootUrl: 'https://searching-stuff.com',
       })).rejects.toEqual('There was an issue launching the Puppeteer browser.');
     });
 
-    it('should pass along a message about a feature URL', async () => {
-      jest.spyOn(stubPage, 'goto')
-        .mockRejectedValue('');
-  
-      await expect(run({
-        featureConfigCsv: testCsvPath,
+    it('should log a message if a URL redirects', async() => {
+      jest.spyOn(stubPage, 'url')
+        .mockReturnValue('https://searching-stuff.com/nope/');
+
+      await run({
+        config: testConfig,
         perRouteFunction: testFunction,
-        rootUrl: 'https://searching-stuff.com',
-      })).rejects.toEqual('Unable to go to https://searching-stuff.com/results/.');
+      });
+
+      expect(console.log).toHaveBeenCalledWith(
+        expect.stringContaining('All features finished')
+      );
+      expect(console.log).toHaveBeenCalledWith(
+        expect.stringContaining('Unable to go to https://searching-stuff.com/results/; redirected to https://searching-stuff.com/nope/.')
+      );
     });
 
-    it('should log a message if the loaded URL does not match the feature URL', async() => {
+    it('should not run if error content found', async() => {
       jest.spyOn(stubPage, 'url')
-        .mockReturnValue('https://searching-stuff.com/redirected/');
+        .mockReturnValue('https://searching-stuff.com/results/');
+      jest.spyOn(stubPage, 'content')
+        .mockResolvedValue('<html>not found</html>');
 
-      expect.assertions(1);
-
-      await expect(run({
-        featureConfigCsv: testCsvPath,
+      await run({
+        config: testConfig,
         perRouteFunction: testFunction,
-        rootUrl: 'https://searching-stuff.com',
-      })).rejects.toEqual('Unable to go to https://searching-stuff.com/results/. Current URL is https://searching-stuff.com/redirected/.');
+      });
+
+      expect(console.log).toHaveBeenCalledWith(
+        expect.stringContaining('Error content found on https://searching-stuff.com/results/; route skipped.')
+      );
     });
   });
 });

@@ -1,17 +1,19 @@
-import { Browser, Page } from 'puppeteer-core';
+import { Browser, Page } from 'puppeteer';
 
 // Pulled from https://github.com/aarmora/jordan-tests-puppeteer-scripts/blob/master/test/mockPuppeteer.ts
 
 export const stubPage = {
   close() {
-    console.log('!!!!!!!!!!!!!!!!!!!');
     return Promise.resolve();
+  },
+  content() {
+    return Promise.resolve('some content');
   },
   goto(url: string) {
-    return Promise.resolve();
+    return Promise.resolve(url);
   },
   url() {
-    return '';
+    return 'www.somewhere.com';
   },
 } as unknown as Page;
 
@@ -20,7 +22,6 @@ export const stubBrowser = {
     return Promise.resolve(stubPage);
   },
   close() {
-    console.log('????????????????????????');
     return Promise.resolve();
   }
 } as unknown as Browser;
