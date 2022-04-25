@@ -2,14 +2,13 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "module": "commonjs",
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "removeComments": true,
-    "preserveConstEnums": true,
     "sourceMap": true,
     "outDir": "dist",
+    "rootDir": ".",
+    "lib": ["es2020","dom"],
   },
-  "include": [
-    "src/**/*",
-    "index.ts",
-  ]
+  "exclude": ["src/__test__/*", "src/**/*.spec.ts"],
+  "include": ["src/**/*", "index.ts"]
 }
