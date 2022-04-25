@@ -1,8 +1,8 @@
 module.exports = {
-  "plugins": [
+  plugins: [
     ["@semantic-release/commit-analyzer", {
-      "preset": "angular",
-      "releaseRules": [
+      preset: "angular",
+      releaseRules: [
         {
           type: "docs",
           scope: "README",
@@ -21,13 +21,13 @@ module.exports = {
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",
     ["@semantic-release/npm", {
-      "tarballDir": "release"
+      tarballDir: "release"
     }],
     ["@semantic-release/github", {
-      "assets": "release/*.tgz"
+      assets: "release/*.tgz",
     }],
-    "@semantic-release/git"
+    "@semantic-release/git",
   ],
-  "branches": ["main"],
-  "rootDir": "dist"
+  branches: ["main"],
+  rootDir: "dist"
 }

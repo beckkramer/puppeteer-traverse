@@ -8,6 +8,37 @@ Traverse lets you easily run the same function on batches of feature routes. You
 
 To run Traverse as part of your project, you'll need to add configuration for the site you want to check, and a function to be run on every route. This is the minimal setup, and might be all you need!
 
+### Minimal configuration example:
+
+```js
+export const config = {
+  app: {
+    errorContent: [],
+    rootUrl: 'https://site-to-check.com',
+  },
+  features: [
+    {
+      name: 'Food Menu',
+      id: 'menu_food',
+      paths: [
+        '/menu/breakfast',
+        '/menu/dinner',
+        '/menu/lunch',
+      ]
+    },
+    {
+      name: 'Drinks Menu',
+      id: 'menu_drinks',
+      paths: [
+        '/menu/beer',
+        '/menu/drinks',
+        '/menu/wine',
+      ]
+    }
+  ]
+};
+```
+
 ### Additional Options:
 
 You might want to skip a route from being checked in certain cases (e.g. if your site has a 404 page and you want to skip it if a route redirects there). If the site you are checking has standardized 404/error content, you can include an array of strings as `errorContent` in your config. If found on a page, the route will be skipped. If you don't want to skip any routes, just leave the `errorContent` array empty.
