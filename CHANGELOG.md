@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/beckkramer/puppeteer-traverse/compare/v1.0.0...v1.0.1) (2022-04-30)
+
+
+### Bug Fixes
+
+* fixes missing file error on install in another project ([0deb8a1](https://github.com/beckkramer/puppeteer-traverse/commit/0deb8a1412bd67945474d4a5511bb42f852fa2a3))
+
 # 1.0.0 (2022-04-30)
 
 
