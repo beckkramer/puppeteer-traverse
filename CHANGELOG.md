@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/beckkramer/puppeteer-traverse/compare/v1.0.1...v1.0.2) (2022-04-30)
+
+
+### Bug Fixes
+
+* adjusts exported package folder structure ([738f2af](https://github.com/beckkramer/puppeteer-traverse/commit/738f2af6b2d5503c82d5ef3c7064fea5c645100d))
+
 ## [1.0.1](https://github.com/beckkramer/puppeteer-traverse/compare/v1.0.0...v1.0.1) (2022-04-30)
 
 
