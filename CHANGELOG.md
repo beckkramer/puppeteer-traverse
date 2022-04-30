@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/beckkramer/puppeteer-traverse/compare/v1.0.2...v1.0.3) (2022-04-30)
+
+
+### Bug Fixes
+
+* fixes main file path ([b73dd15](https://github.com/beckkramer/puppeteer-traverse/commit/b73dd15f83a43b235f240ae2c2b70e6147a5622f))
+
 ## [1.0.2](https://github.com/beckkramer/puppeteer-traverse/compare/v1.0.1...v1.0.2) (2022-04-30)
 
 
