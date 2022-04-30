@@ -9,6 +9,10 @@ module.exports = {
           release: "patch",
         },
         {
+          type: "chore",
+          release: "patch",
+        },
+        {
           type: "fix",
           release: "patch",
         },
