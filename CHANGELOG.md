@@ -1,4 +1,11 @@
-# 1.0.0 (2022-04-25)
+
+# 1.0.1 (2022-04-28)
+
+### Fix
+
+* bumps patch version to fix automated releasing
+
+## 1.0.0 (2022-04-25)
 
 ### Features
 
