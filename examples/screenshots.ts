@@ -1,4 +1,4 @@
-import traverse, {RouteFunctionT} from '../src';
+import traverse, {RouteFunctionT} from '..';
 import { config } from './exampleConfig';
 
 // If you're on Windows, you might need to point Puppeteer at Chrome:
