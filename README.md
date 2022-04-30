@@ -4,6 +4,14 @@
 
 Traverse lets you easily run the same function on batches of feature routes. Your function will have access to an instance of [Puppeteer Page](https://pptr.dev/#?product=Puppeteer&show=api-class-page) for every route you have in your configuration, making it simple to run things like visual regression tests, accessibility checks, and other types of validations you might want to run on an entire website.
 
+## Screenshots
+
+### Mid-run of example:
+![Screenshot 2022-04-30 123108](https://user-images.githubusercontent.com/2972688/166116163-b7abe728-9602-42aa-87b5-378a846f971d.png)
+
+### Completed run, with example of error on one route:
+![Screenshot 2022-04-30 123139](https://user-images.githubusercontent.com/2972688/166116174-cd389292-b14d-4bbb-b704-72ca2fbea805.png)
+
 ## Setup:
 
 To run Traverse as part of your project, you'll need to add configuration for the site you want to check, and a function to be run on every route. This is the minimal setup, and might be all you need!
