@@ -2,7 +2,7 @@ import traverse, {RouteFunctionT} from '..';
 import { config } from './exampleConfig';
 
 // If you're on Windows, you might need to point Puppeteer at Chrome:
-const PUPPETEER_BROWSER_WINDOWS = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+// const PUPPETEER_BROWSER_WINDOWS = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 
 const takeScreenshotPerRoute: RouteFunctionT = async (options) => {
 

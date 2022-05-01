@@ -5,6 +5,7 @@ import puppeteer,{ Browser, LaunchOptions, Page } from 'puppeteer';
 
 import { minimal_args } from './constants';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: FIXME: Sort out cli progress typing
 import { default as cliProgress } from 'cli-progress';
 

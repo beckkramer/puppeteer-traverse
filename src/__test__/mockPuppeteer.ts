@@ -31,10 +31,3 @@ export const stubPuppeteer = {
     return Promise.resolve(stubBrowser);
   }
 } as unknown as any;
-
-// export const stubElementHandle = {
-//   $eval() {
-//     console.log('stub element handle');
-//     return Promise.resolve();
-//   }
-// } as unknown as ElementHandle;
