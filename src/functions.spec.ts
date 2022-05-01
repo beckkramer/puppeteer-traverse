@@ -1,7 +1,5 @@
-
 import puppeteer from 'puppeteer';
 import testConfig from './__test__/testConfig';
-
 
 import {
   run,
@@ -12,9 +10,7 @@ import {
   stubPage,
 } from './__test__/mockPuppeteer';
 
-const testFunction = jest.fn(async () => {
-  await setTimeout(jest.fn(), 200);
-});
+const testFunction = jest.fn();
 
 jest.mock('cli-progress', () => ({
   MultiBar() {
@@ -70,16 +66,16 @@ describe('@run', () => {
   it('should call the passed in function once per path', async () => {
 
     jest.spyOn(stubPage, 'url')
-      .mockReturnValue('https://searching-stuff.com/results/');
-
-    expect.assertions(1);
+      .mockReturnValueOnce('https://searching-stuff.com/best-actors/')
+      .mockReturnValueOnce('https://searching-stuff.com/best-directors/')
+      .mockReturnValueOnce('https://searching-stuff.com/worst-actors/');
 
     await run({
       config: testConfig,
       perRouteFunction: testFunction,
     });
 
-    expect(testFunction).toHaveBeenCalledTimes(2);
+    expect(testFunction).toHaveBeenCalledTimes(3);
   });
 
   it('should close pages and browser when finished', async() => {
@@ -88,16 +84,18 @@ describe('@run', () => {
     const pageCloseSpy = jest.spyOn(stubPage, 'close');
 
     jest.spyOn(stubPage, 'url')
-      .mockReturnValue('https://searching-stuff.com/results/');
+      .mockReturnValueOnce('https://searching-stuff.com/best-actors/')
+      .mockReturnValueOnce('https://searching-stuff.com/best-directors/')
+      .mockReturnValueOnce('https://searching-stuff.com/worst-actors/');
 
     expect.assertions(2);
 
     await run({
       config: testConfig,
-      perRouteFunction: testFunction,
+      perRouteFunction: jest.fn(),
     });
 
-    expect(pageCloseSpy).toHaveBeenCalledTimes(2);
+    expect(pageCloseSpy).toHaveBeenCalledTimes(3);
     expect(browserCloseSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -108,7 +106,7 @@ describe('@run', () => {
   
       await expect(run({
         config: testConfig,
-        perRouteFunction: testFunction,
+        perRouteFunction: jest.fn(),
       })).rejects.toEqual('There was an issue launching the Puppeteer browser.');
     });
 
@@ -118,20 +116,20 @@ describe('@run', () => {
 
       await run({
         config: testConfig,
-        perRouteFunction: testFunction,
+        perRouteFunction: jest.fn(),
       });
 
       expect(console.log).toHaveBeenCalledWith(
         expect.stringContaining('All features finished')
       );
       expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('Unable to go to https://searching-stuff.com/results/; redirected to https://searching-stuff.com/nope/.')
+        expect.stringContaining('Unable to go to https://searching-stuff.com/best-actors/; redirected to https://searching-stuff.com/nope/.')
       );
     });
 
     it('should not run if error content found', async() => {
       jest.spyOn(stubPage, 'url')
-        .mockReturnValue('https://searching-stuff.com/results/');
+        .mockReturnValueOnce('https://searching-stuff.com/best-actors/');
       jest.spyOn(stubPage, 'content')
         .mockResolvedValue('<html>not found</html>');
 
@@ -141,7 +139,7 @@ describe('@run', () => {
       });
 
       expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('Error content found on https://searching-stuff.com/results/; route skipped.')
+        expect.stringContaining('Error content found on https://searching-stuff.com/best-actors/; route skipped.')
       );
     });
   });

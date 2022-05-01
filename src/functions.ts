@@ -1,14 +1,10 @@
 
 'use strict';
 
-import puppeteer,{ Browser, LaunchOptions, Page } from 'puppeteer';
+import cliProgress, {Options, MultiBar, Params} from 'cli-progress';
+import puppeteer, { Browser, LaunchOptions, Page } from 'puppeteer';
 
 import { minimal_args } from './constants';
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: FIXME: Sort out cli progress typing
-import { default as cliProgress } from 'cli-progress';
-
 import {
   ConfigT,
   FeatureT,
@@ -80,7 +76,7 @@ export const getDestinationPage = async (options: {
   return Promise.resolve(page);
 }
 
-const getProgressBar = (features: FeatureT[]) => {
+const getProgressBar = (features: FeatureT[]): MultiBar => {
   let longestFeatureName = '';
 
   features.forEach(feature => {
@@ -89,14 +85,16 @@ const getProgressBar = (features: FeatureT[]) => {
     }
   });
 
-  const barFormat = (options: any, params: any, payload: any) => {
+  const barFormat = (options: Options, params: Params, payload: any): string => {
 
     const completeSize = Math.round(params.progress*options.barsize);
     const incompleteSize = options.barsize-completeSize;
+
+    const filledBar = options.barCompleteString.split('');
+    const remainingBar = options.barIncompleteString.split('');
   
-    const bar = options.barCompleteString.substr(0, completeSize) +
-                options.barGlue +
-                options.barIncompleteString.substr(0, incompleteSize);
+    let bar = filledBar.slice(0, completeSize).join('');
+    bar += remainingBar.slice(0, incompleteSize).join('');
   
     const featureNameFiller = longestFeatureName.length;
   
@@ -124,7 +122,7 @@ const runOnFeature = async (options: {
   feature: FeatureT,
   pageLoadOptions: PageLoadOverridesT,
   perRouteFunction: RouteFunctionT,
-  progressBar: any,
+  progressBar: MultiBar,
   rootUrl: string,
 }) => {
 
@@ -175,7 +173,7 @@ const runOnFeature = async (options: {
       page.close();
       errors.push(error)
     } finally {
-      featureProgressBar.increment(1);
+      featureProgressBar.increment();
     }
   }
 

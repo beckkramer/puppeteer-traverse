@@ -8,14 +8,15 @@ export default {
       name: 'Actors',
       id: 'actors',
       paths: [
-        'results'
+        'best-actors',
+        'worst-actors',
       ]
     },
     {
       name: 'Directors',
       id: 'directors',
       paths: [
-        'results'
+        'best-directors'
       ]
     }
   ]
