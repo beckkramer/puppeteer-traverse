@@ -1,6 +1,6 @@
-# Traverse
+# puppeteer-traverse
 
-A Puppeteer utility to easily run a function you define per route on a set of routes.
+`puppeteer-traverse` is a Puppeteer utility to easily run a function you define per route on a set of routes.
 
 Your function will have access to an instance of [Puppeteer Page](https://pptr.dev/#?product=Puppeteer&show=api-class-page) for every route you have in your configuration, making it simple to run things like visual regression tests, accessibility checks, and other types of validations you might want to run on an entire website.
 
@@ -16,9 +16,20 @@ Your function will have access to an instance of [Puppeteer Page](https://pptr.d
 
 ## Setup:
 
-To run Traverse as part of your project, you'll need to add configuration for the site you want to check, and a function to be run on every route. This is the minimal setup, and might be all you need!
+### Add to your project
 
-### Minimal configuration example:
+#### NPM:
+```
+npm install puppeteer-traverse
+```
+#### Yarn:
+```
+yarn add puppeteer-traverse
+```
+
+### Populate configuration
+
+To run puppeteer-traverse as part of your project, you'll need to add configuration for the site you want to check, and a function to be run on every route. This is the minimal setup, and might be all you need!
 
 ```js
 export const config = {
