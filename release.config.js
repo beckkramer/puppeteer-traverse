@@ -5,7 +5,7 @@ module.exports = {
       releaseRules: [
         {
           type: "docs",
-          scope: "README",
+          scope: "README.md",
           release: "patch",
         },
         {
