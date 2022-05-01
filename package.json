@@ -2,6 +2,10 @@
   "name": "puppeteer-traverse",
   "version": "1.0.5",
   "main": "./dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/beckkramer/puppeteer-traverse"
+  },
   "author": "Beck Kramer",
   "license": "MIT",
   "dependencies": {
