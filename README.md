@@ -1,8 +1,10 @@
 # Traverse
 
-[![codecov](https://codecov.io/gh/beckkramer/puppeteer-traverse/branch/main/graph/badge.svg?token=K32F7O3GV5)](https://codecov.io/gh/beckkramer/puppeteer-traverse)
+A Puppeteer utility to easily run a function you define per route on a set of routes.
 
-Traverse lets you easily run the same function on batches of feature routes. Your function will have access to an instance of [Puppeteer Page](https://pptr.dev/#?product=Puppeteer&show=api-class-page) for every route you have in your configuration, making it simple to run things like visual regression tests, accessibility checks, and other types of validations you might want to run on an entire website.
+Your function will have access to an instance of [Puppeteer Page](https://pptr.dev/#?product=Puppeteer&show=api-class-page) for every route you have in your configuration, making it simple to run things like visual regression tests, accessibility checks, and other types of validations you might want to run on an entire website.
+
+[![codecov](https://codecov.io/gh/beckkramer/puppeteer-traverse/branch/main/graph/badge.svg?token=K32F7O3GV5)](https://codecov.io/gh/beckkramer/puppeteer-traverse)
 
 ## Screenshots
 
