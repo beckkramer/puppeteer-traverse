@@ -1,4 +1,4 @@
-import traverse, {RouteFunctionT} from '..';
+import traverse, { RouteFunctionT } from '..';
 import { config } from './exampleConfig';
 
 // If you're on Windows, you might need to point Puppeteer at Chrome:
@@ -22,7 +22,7 @@ const takeScreenshotPerRoute: RouteFunctionT = async (options) => {
 // You can override any browser options Puppeteer references here.
 const browserOptions = {
   // executablePath: PUPPETEER_BROWSER_WINDOWS,
-  ignoreDefaultArgs: ['--disable-extensions'],
+  // ignoreDefaultArgs: ['--disable-extensions'],
 };
 
 (async () => {

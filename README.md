@@ -18,13 +18,8 @@ Your function will have access to an instance of [Puppeteer Page](https://pptr.d
 
 ### Add to your project
 
-#### NPM:
 ```
 npm install puppeteer-traverse
-```
-#### Yarn:
-```
-yarn add puppeteer-traverse
 ```
 
 ### Populate configuration
@@ -66,4 +61,4 @@ You might want to skip a route from being checked in certain cases (e.g. if your
 
 ## Example: Take a screenshot per route
 
-Inside the `/examples` folder of this project, you'll find configuration, overrides, and a function that will take a screenshot per route. You can take the example for a spin by cloning the repo, running `yarn` to install dependencies, and then and running `yarn example`.
+Inside the `/examples` folder of this project, you'll find configuration, overrides, and a function that will take a screenshot per route. You can take the example for a spin by cloning the repo, running `npm i` to install dependencies, and then and running `npm run example`.
