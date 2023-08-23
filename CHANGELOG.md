@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/beckkramer/puppeteer-traverse/compare/v1.0.6...v1.0.7) (2023-08-23)
+
+
+### Bug Fixes
+
+* back to yarn, updates test mocks, revises how cli-progress is referenced ([90d17b4](https://github.com/beckkramer/puppeteer-traverse/commit/90d17b48d0de74f6fbdd1afb8f5f5cd34f22d973))
+
 ## [1.0.6](https://github.com/beckkramer/puppeteer-traverse/compare/v1.0.5...v1.0.6) (2022-05-01)
 
 ## [1.0.5](https://github.com/beckkramer/puppeteer-traverse/compare/v1.0.4...v1.0.5) (2022-05-01)
