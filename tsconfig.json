@@ -9,7 +9,8 @@
     "outDir": "dist",
     "rootDir": ".",
     "lib": ["es2020","dom"],
+    "target": "ES2020",
   },
-  // "exclude": ["src/__test__/*", "src/**/*.spec.ts"],
+  "exclude": ["src/__test__/*", "src/**/*.spec.ts"],
   "include": ["src/**/*", "index.ts"]
 }
