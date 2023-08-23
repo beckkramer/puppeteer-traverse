@@ -1,5 +1,5 @@
 
-import puppeteer, { Page } from 'puppeteer';
+import { Page } from 'puppeteer';
 
 export declare type ConfigT = {
     app: {
@@ -13,9 +13,6 @@ export declare type FeatureT = {
     id: string;
     paths: string[];
 };
-export declare type PageLoadOverridesT = Partial<puppeteer.WaitForOptions & {
-    referrer: string;
-}>;
 export declare type RouteFunctionT = (options: {
     currentRoute: string;
     feature: Pick<FeatureT, 'name' | 'id'>;

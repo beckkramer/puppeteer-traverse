@@ -10,6 +10,6 @@
     "rootDir": ".",
     "lib": ["es2020","dom"],
   },
-  "exclude": ["src/__test__/*", "src/**/*.spec.ts"],
+  // "exclude": ["src/__test__/*", "src/**/*.spec.ts"],
   "include": ["src/**/*", "index.ts"]
 }

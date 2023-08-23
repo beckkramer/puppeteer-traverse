@@ -1,4 +1,4 @@
-import puppeteer, { Page } from 'puppeteer';
+import { Page, WaitForOptions } from 'puppeteer';
 
 export type ConfigT = {
   app: {
@@ -14,7 +14,7 @@ export type FeatureT = {
   paths: string[],
 };
 
-export type PageLoadOverridesT = Partial<puppeteer.WaitForOptions & { referrer: string }>;
+export type PageLoadOverridesT = Partial<WaitForOptions & { referrer: string }>;
 
 export type RouteFunctionT = (options: 
   {

@@ -12,21 +12,41 @@ import {
 
 const testFunction = jest.fn();
 
-jest.mock('cli-progress', () => ({
-  MultiBar() {
-    return {
-      create() {
-        return {
-          increment: jest.fn(),
-        }
-      },
-      stop: jest.fn(),
-    };
-  },
-  Presets: {
-    shades_grey: '',
-  },
-}));
+
+jest.mock('cli-progress', () => {
+  return {
+    MultiBar: jest.fn().mockImplementation(() => {
+      // The consturctor function returns various fake methods
+      return {
+        create() {
+          return {
+            increment: jest.fn(),
+          }
+        },
+        stop: jest.fn(),
+      }
+    }),
+    Presets: {
+      shades_grey: '',
+    },
+  }
+})
+
+// jest.mock('cli-progress', () => ({
+//   MultiBar() {
+//     return {
+//       create() {
+//         return {
+//           increment: jest.fn(),
+//         }
+//       },
+//       stop: jest.fn(),
+//     };
+//   },
+//   Presets: {
+//     shades_grey: '',
+//   },
+// }));
 
 jest.mock('puppeteer', () => ({
   launch() {
