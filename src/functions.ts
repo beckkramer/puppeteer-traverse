@@ -1,7 +1,7 @@
 
 'use strict';
 
-import cliProgress, {Options, MultiBar, Params} from 'cli-progress';
+import cliProgress from 'cli-progress';
 import puppeteer, { Browser, LaunchOptions, Page } from 'puppeteer';
 
 import { minimal_args } from './constants';
@@ -18,6 +18,7 @@ export const setUpPuppeteerBrowser = async (browserOptions = {}): Promise<Browse
   try {
     browser = await puppeteer.launch({
       args: minimal_args,
+      headless: 'new',
       ...browserOptions,
     })
   } catch(error) {
@@ -76,7 +77,7 @@ export const getDestinationPage = async (options: {
   return Promise.resolve(page);
 }
 
-const getProgressBar = (features: FeatureT[]): MultiBar => {
+const getProgressBar = (features: FeatureT[]): cliProgress.MultiBar => {
   let longestFeatureName = '';
 
   features.forEach(feature => {
@@ -85,7 +86,11 @@ const getProgressBar = (features: FeatureT[]): MultiBar => {
     }
   });
 
-  const barFormat = (options: Options, params: Params, payload: any): string => {
+  const barFormat = (
+    options: cliProgress.Options,
+    params: cliProgress.Params,
+    payload: any,
+  ): string => {
 
     const completeSize = Math.round(params.progress*options.barsize);
     const incompleteSize = options.barsize-completeSize;
@@ -122,7 +127,7 @@ const runOnFeature = async (options: {
   feature: FeatureT,
   pageLoadOptions: PageLoadOverridesT,
   perRouteFunction: RouteFunctionT,
-  progressBar: MultiBar,
+  progressBar: cliProgress.MultiBar,
   rootUrl: string,
 }) => {
 
