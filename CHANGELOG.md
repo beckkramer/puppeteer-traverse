@@ -1,3 +1,10 @@
+## [1.0.8](https://github.com/beckkramer/puppeteer-traverse/compare/v1.0.7...v1.0.8) (2023-08-26)
+
+
+### Bug Fixes
+
+* adds  entry to fix import issue ([23224bb](https://github.com/beckkramer/puppeteer-traverse/commit/23224bb6a259a8c7c11ca1c6e51ffd67ff54f459))
+
 ## [1.0.7](https://github.com/beckkramer/puppeteer-traverse/compare/v1.0.6...v1.0.7) (2023-08-23)
 
 
