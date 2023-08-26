@@ -8,6 +8,7 @@
   "author": "Beck Kramer",
   "license": "MIT",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "dependencies": {
     "cli-progress": "^3.11.1",
     "eslint-config-prettier": "^9.0.0",
