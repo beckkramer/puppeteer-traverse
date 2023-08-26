@@ -1,3 +1,10 @@
+## [1.0.9](https://github.com/beckkramer/puppeteer-traverse/compare/v1.0.8...v1.0.9) (2023-08-26)
+
+
+### Bug Fixes
+
+* adds types field to package.json ([d011e2e](https://github.com/beckkramer/puppeteer-traverse/commit/d011e2e811fe59f2c4ca8d716d5f0d1dd6c54988))
+
 ## [1.0.8](https://github.com/beckkramer/puppeteer-traverse/compare/v1.0.7...v1.0.8) (2023-08-26)
 
 
