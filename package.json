@@ -59,6 +59,6 @@
     "dist/**/*",
     "CHANGELOG.md",
     "package.json",
-    "yarn.lock"
+    "package-lock.json"
   ]
 }
