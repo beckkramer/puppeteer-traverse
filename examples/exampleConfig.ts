@@ -1,27 +1,18 @@
 export const config = {
   app: {
     errorContent: ['page not found'],
-    rootUrl: 'https://www.reddit.com',
+    rootUrl: 'https://en.wikipedia.org/wiki',
   },
   features: [
     {
-      name: 'Basketball',
-      id: 'b_ball',
-      paths: [
-        '/r/nba',
-        '/rabbbbbbbit',
-        '/r/basketball',
-        '/r/basketballtips'
-      ]
+      name: 'Sedimentary Rocks',
+      id: 'sedimentary',
+      paths: ['/Shale', '/Feldspar', '/Coal', '/Gypsum'],
     },
     {
-      name: 'Soccer',
-      id: 'soccer',
-      paths: [
-        '/r/mls',
-        '/r/soccer',
-        '/r/nasl'
-      ]
-    }
-  ]
-}
+      name: 'Fibers',
+      id: 'fibers',
+      paths: ['/Wool', '/Cotton', '/Rayon', '/Linen'],
+    },
+  ],
+};
